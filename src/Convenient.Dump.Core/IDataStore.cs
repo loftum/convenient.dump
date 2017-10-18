@@ -7,7 +7,7 @@ namespace Convenient.Dump.Core
 	{
 		Task Save(string collection, string json);
 		Task<DbInfo> GetInfo();
-		Task<QueryResult> Query(string collection, QueryParameters parameters);
+		Task<QueryResult> QueryCollection(string collection, QueryInput input);
 		Task DropCollection(string collection);
 		Task<bool> RemoveItem(string collection, string id);
 	}

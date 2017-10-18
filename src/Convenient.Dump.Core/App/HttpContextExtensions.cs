@@ -5,10 +5,10 @@ namespace Convenient.Dump.Core.App
 {
 	internal static class HttpContextExtensions
 	{
-		public static QueryParameters GetQueryParameters(this HttpContext context)
+		public static QueryInput GetQueryParameters(this HttpContext context)
 		{
 			var query = context.Request.Query;
-			var parameters = new QueryParameters();
+			var parameters = new QueryInput();
 			foreach (var key in query.Keys)
 			{
 				int number;
@@ -21,11 +21,13 @@ namespace Convenient.Dump.Core.App
 						parameters.Take = int.TryParse(query[key], out number) ? number : 0;
 						break;
 					default:
-						parameters.Fields[key] = query[key];
+						parameters.Parameters[key] = query[key];
 						break;
 				}
 			}
-			return new QueryParameters();
+			
+
+			return parameters;
 		}
 	}
 }

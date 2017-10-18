@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Convenient.Dump.Core.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace Convenient.Dump.Core.App
@@ -18,10 +17,10 @@ namespace Convenient.Dump.Core.App
 		{
 			_options = options;
 			Route("GET", "^/?$", Index);
-			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}$", QueryCollection);
-			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
-			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}$", RemoveItem);
-			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}$", DropCollection);
+			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}/?$", QueryCollection);
+			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}/?$", SaveItem);
+			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
+			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}
 
 		private async Task<object> Index(HttpContext context, Match match)
@@ -73,13 +72,13 @@ namespace Convenient.Dump.Core.App
 		private async Task<object> QueryCollection(HttpContext context, Match match)
 		{
 			var parameters = context.GetQueryParameters();
-			var result = await _options.DataStore.Query(match.Groups["collection"].Value, parameters).ConfigureAwait(false);
+			var result = await _options.DataStore.QueryCollection(match.Groups["collection"].Value, parameters).ConfigureAwait(false);
 			return result;
 		}
 
 		public Func<HttpContext, Task<object>> GetAction(HttpContext context)
 		{
-			return _routes.Select<SimpleRoute, Func<HttpContext, Task<object>>>(r => r.GetAction(context)).FirstOrDefault(a => a != null);
+			return _routes.Select(r => r.GetAction(context)).FirstOrDefault(a => a != null);
 		}
 	}
 }
