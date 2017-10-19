@@ -32,7 +32,7 @@ namespace Convenient.Dump.Core.App.Queries
 			{
 				switch (_enumerator.Current)
 				{
-					case QueryToken s when s.Type == TokenType.String:
+					case var s when s.Type == TokenType.String:
 						switch (s.Value)
 						{
 							case "AND":
@@ -49,16 +49,16 @@ namespace Convenient.Dump.Core.App.Queries
 								break;
 						}
 						break;
-					case QueryToken s when s.Type == TokenType.Punctuation:
+					case var s when s.Type == TokenType.Punctuation:
 						switch (s.Value)
 						{
 							case ":":
-								stack.Push(new BinaryNode(BinaryOperand.Equals, stack.Pop(), ReadNextString()));
+								stack.Push(new BinaryNode(BinaryOperand.Equals, stack.Pop(), ReadNextThing()));
 								Advance(false);
 							break;
 						}
 						break;
-					case QueryToken s when s.Type == TokenType.Whitespace:
+					case var s when s.Type == TokenType.Whitespace:
 						Advance(false);
 						break;
 					default:
@@ -68,7 +68,7 @@ namespace Convenient.Dump.Core.App.Queries
 			return stack.Pop();
 		}
 
-		private QueryNode ReadNextString()
+		private QueryNode ReadNextThing()
 		{
 			Advance();
 			AdvanceWhile(c => c.Current.Type == TokenType.Whitespace);

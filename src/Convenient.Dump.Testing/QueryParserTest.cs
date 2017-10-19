@@ -50,7 +50,7 @@ namespace Convenient.Dump.Testing
 		public void ParseAnd()
 		{
 			var node = QueryParser.Parse("field:value AND field2:value2");
-			_output.WriteLine(node.ToString());
+			_output.WriteLine(Json.Serialize(node, true));
 			var binary = (BinaryNode) node;
 
 			Assert.Equal(BinaryOperand.And, binary.Op);
