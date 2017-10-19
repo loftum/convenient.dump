@@ -9,7 +9,7 @@ namespace Convenient.Dump.Web
         public static void Main(string[] args)
         {
             var host = WebHost.CreateDefaultBuilder(args)
-                .UseKestrel()
+                //.UseKestrel()
 				.PreferHostingUrls(true)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

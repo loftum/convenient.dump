@@ -43,7 +43,7 @@ namespace ConvenientDump.LiteDb
 		public Task<QueryResult> QueryCollection(string collection, QueryInput input)
 		{
 			var coll = _db.GetCollection(collection);
-
+			
 			var result = new QueryResult
 			{
 				Items = coll.FindAll().Select(ToObject).ToArray()
