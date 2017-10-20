@@ -28,6 +28,7 @@ namespace Convenient.Dump.Web
 	        app.Map("/db", a => a.UseDump(new DumpOptions
 	        {
 				DataStore = new LiteDbDataStore(),
+				
 				ToJson = JsonConvert.SerializeObject
 	        }));
 

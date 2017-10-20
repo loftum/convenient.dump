@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Convenient.Dump.Core.App.IO;
 using Microsoft.AspNetCore.Http;
 
 namespace Convenient.Dump.Core.App
@@ -12,15 +13,44 @@ namespace Convenient.Dump.Core.App
 	{
 		private readonly DumpOptions _options;
 		private readonly List<SimpleRoute> _routes = new List<SimpleRoute>();
+		private readonly FileLoader _fileLoader = new FileLoader();
 
 		public DumpController(DumpOptions options)
 		{
 			_options = options;
+			Route("GET", "^/Content/angular-js$", GetAngular);
+			Route("GET", "^/Content/site-css$", GetSiteCss);
 			Route("GET", "^/?$", Index);
-			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}/?$", QueryCollection);
+			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
 			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
+		}
+
+		private async Task<object> GetSiteCss(HttpContext context, Match match)
+		{
+			var file = await _fileLoader.GetAsync("Content/site.css").ConfigureAwait(false);
+			return new Response
+			{
+				Handle = r =>
+				{
+					r.ContentType = "text/javascript";
+					return r.WriteAsync(file);
+				}
+			};
+		}
+
+		private async Task<object> GetAngular(HttpContext context, Match match)
+		{
+			var file = await _fileLoader.GetAsync("Content/angular.min.js").ConfigureAwait(false);
+			return new Response
+			{
+				Handle = r =>
+				{
+					r.ContentType = "text/javascript";
+					return r.WriteAsync(file);
+				}
+			};
 		}
 
 		private async Task<object> Index(HttpContext context, Match match)

@@ -5,6 +5,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="App\Content\angular.min.js" />
+    <None Remove="App\Content\site.css" />
+    <None Remove="App\Views\DbInfo.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="App\Content\angular.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App\Content\site.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App\Views\DbInfo.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App\Views\QueryResult.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
   </ItemGroup>
 

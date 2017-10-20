@@ -6,5 +6,6 @@ namespace Convenient.Dump.Core
 	{
 		public IDataStore DataStore { get; set; }
 		public Func<object, string> ToJson { get; set; }
+		public IViewEngine ViewEngine { get; set; }
 	}
 }

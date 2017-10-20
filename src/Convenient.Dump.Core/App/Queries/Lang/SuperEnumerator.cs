@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Convenient.Dump.Core.App.Queries
+namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	public class SuperEnumerator<T> : ISuperEnumerator<T>
 	{

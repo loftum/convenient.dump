@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace Convenient.Dump.Core.App.Queries
+namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	internal static class StreamExtensions
 	{

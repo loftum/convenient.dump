@@ -1,4 +1,4 @@
-﻿namespace Convenient.Dump.Core.App.Queries
+﻿namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	public enum TokenType
 	{

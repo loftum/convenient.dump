@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Convenient.Dump.Core.App.Queries
+namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	public class QueryLexer : ISuperEnumerator<QueryToken>
 	{
@@ -62,7 +62,7 @@ namespace Convenient.Dump.Core.App.Queries
 			var position = _enumerator.Position;
 			while (_enumerator.MoveNext() && _enumerator.Current != '"')
 			{
-				value.Append(_enumerator.Current);
+				value.Append((char) _enumerator.Current);
 			}
 			return new QueryToken(TokenType.String, position, value.ToString());
 		}
@@ -80,7 +80,7 @@ namespace Convenient.Dump.Core.App.Queries
 			var position = _enumerator.Position;
 			while (_enumerator.Current.IsWhitespace())
 			{
-				value.Append(_enumerator.Current);
+				value.Append((char) _enumerator.Current);
 				if (!_enumerator.MoveNext())
 				{
 					break;
@@ -96,7 +96,7 @@ namespace Convenient.Dump.Core.App.Queries
 			var position = _enumerator.Position;
 			while (_enumerator.Current.IsLetterOrDigit() || allOthers.Contains(_enumerator.Current))
 			{
-				value.Append(_enumerator.Current);
+				value.Append((char) _enumerator.Current);
 				if (!_enumerator.MoveNext())
 				{
 					break;

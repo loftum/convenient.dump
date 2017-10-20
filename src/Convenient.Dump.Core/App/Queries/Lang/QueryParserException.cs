@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Convenient.Dump.Core.App.Queries
+namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	public class QueryParserException : Exception
 	{
-		public QueryParserException(SourcePosition position, string message) : base(Format(position, message))
+		public QueryParserException(SourcePosition position, string message) : base((string) Format(position, message))
 		{
 		}
 

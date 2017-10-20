@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-namespace Convenient.Dump.Core.App.Queries
+namespace Convenient.Dump.Core.App.Queries.Lang
 {
 	public class SourceStreamEnumerator : ISuperEnumerator<char>
 	{
