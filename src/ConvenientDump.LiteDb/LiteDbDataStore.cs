@@ -33,6 +33,13 @@ namespace ConvenientDump.LiteDb
 			return Task.CompletedTask;
 		}
 
+		public Task<object> Get(string collection, string id)
+		{
+			var coll = _db.GetCollection(collection);
+			var result = coll.FindById(new ObjectId(id));
+			return Task.FromResult((object)result);
+		}
+
 		public Task<bool> RemoveItem(string collection, string id)
 		{
 			var coll = _db.GetCollection(collection);

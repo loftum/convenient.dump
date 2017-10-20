@@ -9,12 +9,60 @@
   <body>
     Query result
     <div ng-app="app" ng-controller="Ctrl as vm">
-      
+      <div>
+        <input type="text" placeholder="search" ng-model="vm.search.q" />
+      </div>
+      <div>
+        <button type="button" ng-click="vm.search()">Search</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Value</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.result.Items">
+            <td><a href="@BasePath@Path/{{item._id || item.id || item.Id}}">{{item._id || item.id || item.Id}}</a></td>
+            <td><pre>{{item | json}}</pre></td>
+            <td>Hello</td>
+          </tr>
+        </tbody>
+      </table>
+      <div ng-show="!!vm.error">{{vm.error | json}}</div>
     </div>
     <script id="model" type="text/json">@Model</script>
     <script type="text/javascript">
       (function() {
+        angular.module("app").controller("Ctrl", Ctrl);
 
+        function Ctrl($http) {
+          var vm = this;
+          vm.search = {
+            q:""
+          };
+
+          vm.search = function () {
+            vm.error = null;
+            $http({
+              method: "GET",
+              url: document.location.href,
+              params: vm.search
+            }).then(function (r) {
+              setResult(r.data);
+            }).catch(function (e) {
+              vm.error = e.data;
+            });
+          }
+
+          function setResult(result) {
+            result.Items = result.Items || result.items;
+            vm.result = result;
+          }
+          setResult(JSON.parse(document.getElementById("model").innerHTML) || {items:[]});
+        }
       })();
     </script>
   </body>

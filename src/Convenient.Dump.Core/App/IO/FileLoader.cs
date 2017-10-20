@@ -25,7 +25,7 @@ namespace Convenient.Dump.Core.App.IO
 		private static async Task<FileThingy> GetFileThingy(string name)
 		{
 			string content;
-			var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name);
+			var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App", name);
 			if (File.Exists(path))
 			{
 				content = await File.ReadAllTextAsync(path).ConfigureAwait(false);

@@ -22,6 +22,7 @@ namespace Convenient.Dump.Core.App
 			Route("GET", "^/Content/site-css$", GetSiteCss);
 			Route("GET", "^/?$", Index);
 			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
+			Route("GET", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", GetItem);
 			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
@@ -34,7 +35,7 @@ namespace Convenient.Dump.Core.App
 			{
 				Handle = r =>
 				{
-					r.ContentType = "text/javascript";
+					r.ContentType = "text/css";
 					return r.WriteAsync(file);
 				}
 			};
@@ -57,6 +58,14 @@ namespace Convenient.Dump.Core.App
 		{
 			var db = await _options.DataStore.GetInfo().ConfigureAwait(false);
 			return db;
+		}
+
+		private async Task<object> GetItem(HttpContext context, Match match)
+		{
+			var collection = match.Groups["collection"].Value;
+			var id = match.Groups["id"].Value;
+			var result = await _options.DataStore.Get(collection, id).ConfigureAwait(false);
+			return result;
 		}
 
 		private async Task<object> RemoveItem(HttpContext context, Match match)

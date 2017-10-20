@@ -5,6 +5,6 @@ namespace Convenient.Dump.Core
 {
 	public interface IViewEngine
 	{
-		Task WriteAsync(HttpContext context, object result);
+		Task<string> Render(HttpContext context, object result);
 	}
 }
