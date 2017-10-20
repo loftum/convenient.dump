@@ -10,7 +10,7 @@ namespace Convenient.Dump.Core.App.Queries
 
 		private static string Format(SourcePosition position, string message)
 		{
-			return $"{position}: error: {message}";
+			return $"{position}: {message}";
 		}
 
 		public static QueryParserException UnexpectedEndAt(QueryToken token)

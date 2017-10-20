@@ -17,53 +17,73 @@ namespace Convenient.Dump.Testing
 		[Fact]
 		public void ParseEmpty_ReturnsQueryAll()
 		{
-			var node = (ConstantNode) QueryParser.Parse("");
+			var node = Parse<ConstantNode>("");
 			Assert.Equal("*", node.Value);
 		}
 
 		[Fact]
 		public void ParseWhitespace_ReturnsQueryAll()
 		{
-			var node = (ConstantNode)QueryParser.Parse("  ");
+			var node = Parse<ConstantNode>("  ");
 			Assert.Equal("*", node.Value);
 		}
 
 		[Fact]
 		public void ParseAsterisk_ReturnsQueryAll()
 		{
-			var node = (ConstantNode) QueryParser.Parse("*");
-
+			var node = Parse<ConstantNode>("*");
 			Assert.Equal("*", node.Value);
 		}
 
 		[Fact]
 		public void ParseEquals()
 		{
-			var node = QueryParser.Parse("field:value");
-			_output.WriteLine(node.ToString());
-			var binary = (BinaryNode)node;
-
-			Assert.Equal(BinaryOperand.Equals, binary.Op);
+			var node = Parse<BinaryNode>("field:value");
+			Assert.Equal(BinaryOperand.Equals, node.Op);
 		}
 
 		[Fact]
 		public void ParseAnd()
 		{
-			var node = QueryParser.Parse("field:value AND field2:value2");
-			_output.WriteLine(Json.Serialize(node, true));
-			var binary = (BinaryNode) node;
-
-			Assert.Equal(BinaryOperand.And, binary.Op);
+			var node = Parse<BinaryNode>("field:value AND field2:value2");
+			Assert.Equal(BinaryOperand.And, node.Op);
 		}
 
 		[Fact]
 		public void ParseOr()
 		{
-			var node = QueryParser.Parse("field:value OR field2:value2");
-			_output.WriteLine(node.ToString());
-			var binary = (BinaryNode)node;
+			var node = Parse<BinaryNode>("field:value OR field2:value2");
+			Assert.Equal(BinaryOperand.Or, node.Op);
+		}
 
-			Assert.Equal(BinaryOperand.Or, binary.Op);
+		[Fact]
+		public void ParseUnary()
+		{
+			var node = Parse<UnaryNode>("(field:value)");
+			Assert.IsAssignableFrom<BinaryNode>(node.Operand);
+		}
+
+		[Fact]
+		public void UnaryError()
+		{
+			Assert.Throws<QueryParserException>(() => QueryParser.Parse("("));
+		}
+
+		private QueryNode Parse(string query)
+		{
+			var node = QueryParser.Parse(query);
+			_output.WriteLine($"Query: {node}");
+			_output.WriteLine("");
+			_output.WriteLine("Syntax tree:");
+			_output.WriteLine(Json.Serialize(node, true));
+			return node;
+		}
+
+		private T Parse<T>(string query) where T : QueryNode
+		{
+			var node = Parse(query);
+			Assert.IsAssignableFrom<T>(node);
+			return (T) node;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Convenient.Dump.Core.Data;
+﻿using Convenient.Dump.Core.App.Queries;
+using Convenient.Dump.Core.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace Convenient.Dump.Core.App
@@ -20,12 +21,11 @@ namespace Convenient.Dump.Core.App
 					case "take":
 						parameters.Take = int.TryParse(query[key], out number) ? number : 0;
 						break;
-					default:
-						parameters.Parameters[key] = query[key];
+					case "q":
+						parameters.Query = QueryParser.Parse(query[key]);
 						break;
 				}
 			}
-			
 
 			return parameters;
 		}

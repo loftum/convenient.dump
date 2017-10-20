@@ -43,10 +43,11 @@ namespace ConvenientDump.LiteDb
 		public Task<QueryResult> QueryCollection(string collection, QueryInput input)
 		{
 			var coll = _db.GetCollection(collection);
-			
+			var query = input.Query == null ? Query.All() : new QueryVisitor().Visit(input.Query);
+
 			var result = new QueryResult
 			{
-				Items = coll.FindAll().Select(ToObject).ToArray()
+				Items = coll.Find(query, input.Skip, input.Take).Select(ToObject).ToArray()
 			};
 			return Task.FromResult(result);
 		}

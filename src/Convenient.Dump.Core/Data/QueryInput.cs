@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Convenient.Dump.Core.App.Queries.Nodes;
 
 namespace Convenient.Dump.Core.Data
 {
@@ -6,9 +6,6 @@ namespace Convenient.Dump.Core.Data
 	{
 		public int Skip { get; set; }
 		public int Take { get; set; } = 20;
-
-		public Dictionary<string, string> Parameters { get; } = new Dictionary<string, string>();
-
-		public Dictionary<string, object> Body { get; } = new Dictionary<string, object>();
+		public QueryNode Query { get; set; }
 	}
 }

@@ -18,7 +18,7 @@ namespace Convenient.Dump.Core.App
 			_options = options;
 			Route("GET", "^/?$", Index);
 			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}/?$", QueryCollection);
-			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}/?$", SaveItem);
+			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}

@@ -17,7 +17,6 @@ namespace Convenient.Dump.Core.App.Queries
 			Result = Parse();
 		}
 
-
 		private QueryNode Parse()
 		{
 			AdvanceWhile(c => c.Current.Type == TokenType.Whitespace, false);
@@ -25,40 +24,53 @@ namespace Convenient.Dump.Core.App.Queries
 			{
 				return new ConstantNode("*");
 			}
-			
+			return ParseWhile(() => _enumerator.Moved);
+		}
+
+
+		private QueryNode ParseWhile(Func<bool> condition)
+		{
 			var stack = new Stack<QueryNode>();
 
-			while (_enumerator.Moved)
+			while (_enumerator.Moved && condition())
 			{
-				switch (_enumerator.Current)
+				var current = _enumerator.Current;
+				switch (current.Type)
 				{
-					case var s when s.Type == TokenType.String:
-						switch (s.Value)
+					case TokenType.String:
+						switch (current.Value)
 						{
 							case "AND":
 								Advance();
-								stack.Push(new BinaryNode(BinaryOperand.And, stack.Pop(), Parse()));
+								stack.Push(new BinaryNode(BinaryOperand.And, stack.Pop(), ParseWhile(condition)));
 								break;
 							case "OR":
 								Advance();
-								stack.Push(new BinaryNode(BinaryOperand.Or, stack.Pop(), Parse()));
+								stack.Push(new BinaryNode(BinaryOperand.Or, stack.Pop(), ParseWhile(condition)));
 								break;
 							default:
 								Advance(false);
-								stack.Push(new ConstantNode(s.Value));
+								stack.Push(new ConstantNode(current.Value));
 								break;
 						}
 						break;
-					case var s when s.Type == TokenType.Punctuation:
-						switch (s.Value)
+					case TokenType.Punctuation:
+						switch (current.Value)
 						{
 							case ":":
 								stack.Push(new BinaryNode(BinaryOperand.Equals, stack.Pop(), ReadNextThing()));
 								Advance(false);
-							break;
+								break;
+							case "(":
+								Advance();
+								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.Value != ")")));
+								Advance(false);
+								break;
+							default:
+								throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
 						}
 						break;
-					case var s when s.Type == TokenType.Whitespace:
+					case TokenType.Whitespace:
 						Advance(false);
 						break;
 					default:
