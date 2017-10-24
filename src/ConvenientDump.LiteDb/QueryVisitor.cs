@@ -23,7 +23,7 @@ namespace ConvenientDump.LiteDb
 				case BinaryOperand.And: return Query.And(Visit(binary.Left), Visit(binary.Right));
 				case BinaryOperand.Or: return Query.Or(Visit(binary.Left), Visit(binary.Right));
 				case BinaryOperand.Equals:
-					return Query.EQ(Visit(binary.Left).Field, Visit(binary.Right).Field);
+					return Query.EQ(Visit(binary.Left).Field, new BsonValue(Visit(binary.Right).Field));
 			}
 			throw new InvalidOperationException($"Unknown node {binary.GetType()}");
 		}

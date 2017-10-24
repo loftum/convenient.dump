@@ -62,8 +62,9 @@ namespace Convenient.Dump.Core.App.Queries.Lang
 			var position = _enumerator.Position;
 			while (_enumerator.MoveNext() && _enumerator.Current != '"')
 			{
-				value.Append((char) _enumerator.Current);
+				value.Append(_enumerator.Current);
 			}
+			_enumerator.MoveNext();
 			return new QueryToken(TokenType.String, position, value.ToString());
 		}
 

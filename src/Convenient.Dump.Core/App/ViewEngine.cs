@@ -23,10 +23,10 @@ namespace Convenient.Dump.Core.App
 			{
 				return "<html><head><meta charset=\"UTF-8\"/><title>Null</title></head><body>Null</body></html>";
 			}
-			var html = await _fileLoader.GetAsync($"Views/{model.GetType().Name}.html");
+			var html = await _fileLoader.GetOrDefaultAsync($"Views/{model.GetType().Name}.html");
 			if (html == null)
 			{
-				html = await _fileLoader.GetAsync($"Views/Json.html");
+				html = await _fileLoader.GetAsync("Views/Json.html");
 			}
 			var dictionary = new Dictionary<string, object>
 			{

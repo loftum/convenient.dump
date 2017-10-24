@@ -37,7 +37,7 @@ namespace ConvenientDump.LiteDb
 		{
 			var coll = _db.GetCollection(collection);
 			var result = coll.FindById(new ObjectId(id));
-			return Task.FromResult((object)result);
+			return Task.FromResult(ToObject(result));
 		}
 
 		public Task<bool> RemoveItem(string collection, string id)

@@ -8,6 +8,8 @@
     <None Remove="App\Content\angular.min.js" />
     <None Remove="App\Content\site.css" />
     <None Remove="App\Views\DbInfo.html" />
+    <None Remove="App\Views\ExceptionModel.html" />
+    <None Remove="App\Views\Json.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,8 @@
     <EmbeddedResource Include="App\Views\DbInfo.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="App\Views\ExceptionModel.html" />
+    <EmbeddedResource Include="App\Views\Json.html" />
     <EmbeddedResource Include="App\Views\QueryResult.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -37,6 +37,13 @@ namespace Convenient.Dump.Testing
 		}
 
 		[Fact]
+		public void ParseEqualsWithQuotes()
+		{
+			var node = Parse<BinaryNode>("\"_field\":value");
+			Assert.Equal(BinaryOperand.Equals, node.Op);
+		}
+
+		[Fact]
 		public void ParseEquals()
 		{
 			var node = Parse<BinaryNode>("field:value");

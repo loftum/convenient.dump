@@ -18,12 +18,20 @@ namespace Convenient.Dump.Core.App.IO
 				return f.Content;
 			}
 			var file = await GetFileThingy(name);
-			if (file == null)
+			Files[name] = file;
+			return file.Content;
+		}
+
+		public async Task<string> GetOrDefaultAsync(string name)
+		{
+			try
+			{
+				return await GetAsync(name).ConfigureAwait(false);
+			}
+			catch
 			{
 				return null;
 			}
-			Files[name] = file;
-			return file.Content;
 		}
 
 		private static async Task<FileThingy> GetFileThingy(string name)
