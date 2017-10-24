@@ -12,3 +12,7 @@ a, a:visited {
 a:hover {
     color: #dfdfdf;
 }
+
+.red {
+    color: #ff0000;
+}

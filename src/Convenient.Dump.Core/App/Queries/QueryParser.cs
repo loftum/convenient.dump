@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Convenient.Dump.Core.App.Queries.Lang;
 using Convenient.Dump.Core.App.Queries.Nodes;
 
@@ -59,7 +60,12 @@ namespace Convenient.Dump.Core.App.Queries
 						switch (current.Value)
 						{
 							case ":":
-								stack.Push(new BinaryNode(BinaryOperand.Equals, stack.Pop(), ReadNextThing()));
+								if (!stack.Any())
+								{
+									throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
+								}
+								var left = stack.Pop();
+								stack.Push(new BinaryNode(BinaryOperand.Equals, left, ReadNextThing()));
 								Advance(false);
 								break;
 							case "(":

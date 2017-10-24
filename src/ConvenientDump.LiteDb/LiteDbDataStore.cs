@@ -51,7 +51,7 @@ namespace ConvenientDump.LiteDb
 		{
 			var coll = _db.GetCollection(collection);
 			var query = input.Query == null ? Query.All() : new QueryVisitor().Visit(input.Query);
-
+			
 			var result = new QueryResult
 			{
 				Items = coll.Find(query, input.Skip, input.Take).Select(ToObject).ToArray()

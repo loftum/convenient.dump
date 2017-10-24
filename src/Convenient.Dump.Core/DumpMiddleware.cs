@@ -30,13 +30,40 @@ namespace Convenient.Dump.Core
 			}
 		}
 
-		public Task Invoke(HttpContext context)
+		public async Task Invoke(HttpContext context)
 		{
-			var action = _controller.GetAction(context);
-			return action == null ? _next.Invoke(context) : ExecuteWithViewEngine(context, action);
+			try
+			{
+				var action = _controller.GetAction(context);
+				if (action == null)
+				{
+					await _next.Invoke(context);
+				}
+				else
+				{
+					await Execute(context, action).ConfigureAwait(false);
+				}
+			}
+			catch (Exception ex)
+			{
+				var model = new ExceptionModel(ex);
+				context.Response.StatusCode = 500;
+				switch (context.GetResponseType())
+				{
+					case ResponseTypes.Html:
+						context.Response.ContentType = "text/html";
+						var html = await _options.ViewEngine.Render(context, model);
+						await context.Response.WriteAsync(html).ConfigureAwait(false);
+						break;
+					default:
+						context.Response.ContentType = "text/json";
+						await context.Response.WriteAsync(_options.ToJson(model));
+						break;
+				}
+			}
 		}
 
-		private async Task ExecuteWithViewEngine(HttpContext context, Func<HttpContext, Task<object>> action)
+		private async Task Execute(HttpContext context, Func<HttpContext, Task<object>> action)
 		{
 			var result = await action(context).ConfigureAwait(false);
 			switch (result)
@@ -63,6 +90,22 @@ namespace Convenient.Dump.Core
 					}
 					break;
 			}
+		}
+	}
+
+	internal class ExceptionModel
+	{
+		public string Type { get; set; }
+		public string Message { get; set; }
+		public string StackTrace { get; set; }
+		public ExceptionModel InnerException { get; set; }
+
+		public ExceptionModel(Exception ex)
+		{
+			Type = ex?.GetType().Name;
+			Message = ex?.Message ?? "There is no spoon";
+			StackTrace = ex?.StackTrace;
+			InnerException = ex.InnerException == null ? null : new ExceptionModel(ex.InnerException);
 		}
 	}
 }

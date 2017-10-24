@@ -18,6 +18,10 @@ namespace Convenient.Dump.Core.App.IO
 				return f.Content;
 			}
 			var file = await GetFileThingy(name);
+			if (file == null)
+			{
+				return null;
+			}
 			Files[name] = file;
 			return file.Content;
 		}

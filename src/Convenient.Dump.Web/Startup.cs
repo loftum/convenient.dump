@@ -1,4 +1,6 @@
-﻿using Convenient.Dump.Core;
+﻿using System;
+using System.Threading.Tasks;
+using Convenient.Dump.Core;
 using ConvenientDump.LiteDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
