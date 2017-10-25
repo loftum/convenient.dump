@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace Convenient.Dump.Core.App
 {
@@ -9,16 +8,16 @@ namespace Convenient.Dump.Core.App
 	{
 		public string Method { get; }
 		public Regex Path { get; }
-		public Func<HttpContext, Match, Task<object>> Action { get; }
+		public Func<SimpleContext, Match, Task<object>> Action { get; }
 
-		public SimpleRoute(string method, string pathPattern, Func<HttpContext, Match, Task<object>> action)
+		public SimpleRoute(string method, string pathPattern, Func<SimpleContext, Match, Task<object>> action)
 		{
 			Method = method;
 			Path = new Regex(pathPattern, RegexOptions.IgnoreCase);
 			Action = action;
 		}
 
-		public Func<HttpContext, Task<object>> GetAction(HttpContext context)
+		public Func<SimpleContext, Task<object>> GetAction(SimpleContext context)
 		{
 			if (context == null || context.Request.Method != Method)
 			{

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Convenient.Dump.Core.App;
 using Microsoft.AspNetCore.Http;
@@ -34,14 +36,25 @@ namespace Convenient.Dump.Core
 		{
 			try
 			{
-				var action = _controller.GetAction(context);
+				var simple = new SimpleContext
+				{
+					Request = new SimpleRequest
+					{
+						Method = context.Request.Method,
+						Path = context.Request.Path,
+						Headers = new SimpleHeaderDictionary(context.Request.Headers.Select(h => new KeyValuePair<string, string>(h.Key, h.Value))),
+						Query = context.Request.Query.ToDictionary(q => q.Key, q => q.Value.ToArray()),
+						Body = context.Request.Body
+					}
+				};
+				var action = _controller.GetAction(simple);
 				if (action == null)
 				{
 					await _next.Invoke(context);
 				}
 				else
 				{
-					await Execute(context, action).ConfigureAwait(false);
+					await Execute(context, simple, action).ConfigureAwait(false);
 				}
 			}
 			catch (Exception ex)
@@ -63,13 +76,13 @@ namespace Convenient.Dump.Core
 			}
 		}
 
-		private async Task Execute(HttpContext context, Func<HttpContext, Task<object>> action)
+		private async Task Execute(HttpContext context, SimpleContext simple, Func<SimpleContext, Task<object>> action)
 		{
-			var result = await action(context).ConfigureAwait(false);
+			var result = await action(simple).ConfigureAwait(false);
 			switch (result)
 			{
-				case Response r:
-					await r.Handle(context.Response).ConfigureAwait(false);
+				case SimpleResponse r:
+					await r.WriteAsync(context.Response.Body).ConfigureAwait(false);
 					break;
 				case null:
 					context.Response.ContentType = "text/plain";
@@ -90,22 +103,6 @@ namespace Convenient.Dump.Core
 					}
 					break;
 			}
-		}
-	}
-
-	internal class ExceptionModel
-	{
-		public string Type { get; set; }
-		public string Message { get; set; }
-		public string StackTrace { get; set; }
-		public ExceptionModel InnerException { get; set; }
-
-		public ExceptionModel(Exception ex)
-		{
-			Type = ex?.GetType().Name;
-			Message = ex?.Message ?? "There is no spoon";
-			StackTrace = ex?.StackTrace;
-			InnerException = ex.InnerException == null ? null : new ExceptionModel(ex.InnerException);
 		}
 	}
 }

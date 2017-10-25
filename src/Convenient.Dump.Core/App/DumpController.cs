@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Convenient.Dump.Core.App.IO;
-using Microsoft.AspNetCore.Http;
 
 namespace Convenient.Dump.Core.App
 {
@@ -28,39 +27,33 @@ namespace Convenient.Dump.Core.App
 			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}
 
-		private async Task<object> GetSiteCss(HttpContext context, Match match)
+		private async Task<object> GetSiteCss(SimpleContext context, Match match)
 		{
 			var file = await _fileLoader.GetAsync("Content/site.css").ConfigureAwait(false);
-			return new Response
+			return new SimpleResponse
 			{
-				Handle = r =>
-				{
-					r.ContentType = "text/css";
-					return r.WriteAsync(file);
-				}
+				ContentType = "text/css",
+				WriteAsync = r => r.WriteAsync(file)
 			};
 		}
 
-		private async Task<object> GetAngular(HttpContext context, Match match)
+		private async Task<object> GetAngular(SimpleContext context, Match match)
 		{
 			var file = await _fileLoader.GetAsync("Content/angular.min.js").ConfigureAwait(false);
-			return new Response
+			return new SimpleResponse
 			{
-				Handle = r =>
-				{
-					r.ContentType = "text/javascript";
-					return r.WriteAsync(file);
-				}
+				ContentType = "text/javascript",
+				WriteAsync = r => r.WriteAsync(file)
 			};
 		}
 
-		private async Task<object> Index(HttpContext context, Match match)
+		private async Task<object> Index(SimpleContext context, Match match)
 		{
 			var db = await _options.DataStore.GetInfo().ConfigureAwait(false);
 			return db;
 		}
 
-		private async Task<object> GetItem(HttpContext context, Match match)
+		private async Task<object> GetItem(SimpleContext context, Match match)
 		{
 			var collection = match.Groups["collection"].Value;
 			var id = match.Groups["id"].Value;
@@ -68,7 +61,7 @@ namespace Convenient.Dump.Core.App
 			return result;
 		}
 
-		private async Task<object> RemoveItem(HttpContext context, Match match)
+		private async Task<object> RemoveItem(SimpleContext context, Match match)
 		{
 			var collection = match.Groups["collection"].Value;
 			var id = match.Groups["id"].Value;
@@ -79,7 +72,7 @@ namespace Convenient.Dump.Core.App
 			};
 		}
 
-		private async Task<object> DropCollection(HttpContext context, Match match)
+		private async Task<object> DropCollection(SimpleContext context, Match match)
 		{
 			var collection = match.Groups["collection"].Value;
 			await _options.DataStore.DropCollection(collection).ConfigureAwait(false);
@@ -89,7 +82,7 @@ namespace Convenient.Dump.Core.App
 			};
 		}
 
-		private async Task<object> SaveItem(HttpContext context, Match match)
+		private async Task<object> SaveItem(SimpleContext context, Match match)
 		{
 			var collection = match.Groups["collection"].Value;
 			using (var reader = new StreamReader(context.Request.Body))
@@ -103,19 +96,19 @@ namespace Convenient.Dump.Core.App
 			};
 		}
 
-		private void Route(string method, string pathPattern, Func<HttpContext, Match, Task<object>> action)
+		private void Route(string method, string pathPattern, Func<SimpleContext, Match, Task<object>> action)
 		{
 			_routes.Add(new SimpleRoute(method, pathPattern, action));
 		}
 
-		private async Task<object> QueryCollection(HttpContext context, Match match)
+		private async Task<object> QueryCollection(SimpleContext context, Match match)
 		{
 			var parameters = context.GetQueryParameters();
 			var result = await _options.DataStore.QueryCollection(match.Groups["collection"].Value, parameters).ConfigureAwait(false);
 			return result;
 		}
 
-		public Func<HttpContext, Task<object>> GetAction(HttpContext context)
+		public Func<SimpleContext, Task<object>> GetAction(SimpleContext context)
 		{
 			return _routes.Select(r => r.GetAction(context)).FirstOrDefault(a => a != null);
 		}
