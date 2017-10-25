@@ -47,6 +47,18 @@ namespace ConvenientDump.LiteDb
 			return Task.FromResult(result);
 		}
 
+		public Task ClearCollection(string collection)
+		{
+			var coll = _db.GetCollection(collection);
+			var result = coll.Delete(Query.All());
+			return Task.FromResult(result);
+		}
+
+		public Task ClearAllCollections()
+		{
+			return Task.WhenAll(_db.GetCollectionNames().Select(ClearCollection));
+		}
+
 		public Task<QueryResult> QueryCollection(string collection, QueryInput input)
 		{
 			var coll = _db.GetCollection(collection);

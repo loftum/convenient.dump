@@ -10,6 +10,8 @@ namespace Convenient.Dump.Core
 		Task<QueryResult> QueryCollection(string collection, QueryInput input);
 		Task DropCollection(string collection);
 		Task<bool> RemoveItem(string collection, string id);
+		Task ClearCollection(string collection);
 		Task<object> Get(string collection, string id);
+		Task ClearAllCollections();
 	}
 }

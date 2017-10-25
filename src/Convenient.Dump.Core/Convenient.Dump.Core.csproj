@@ -22,8 +22,12 @@
     <EmbeddedResource Include="App\Views\DbInfo.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="App\Views\ExceptionModel.html" />
-    <EmbeddedResource Include="App\Views\Json.html" />
+    <EmbeddedResource Include="App\Views\ExceptionModel.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App\Views\Json.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="App\Views\QueryResult.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

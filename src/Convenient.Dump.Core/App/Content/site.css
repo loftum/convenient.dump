@@ -14,5 +14,44 @@ a:hover {
 }
 
 .red {
+    color: #990000;
+}
+
+.btn {
+    cursor: pointer;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #999999;
+    color: #999999;
+    background: #222222;
+}
+
+.btn-red {
     color: #ff0000;
+    background: #222222;
+}
+
+.btn-orange {
+    color: #ff9900;
+    background: #222222;
+}
+
+.g100 {
+    width: 100%;
+}
+
+.bordered {
+    border: 1px solid #999999;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.clear-both {
+    clear: both;
 }

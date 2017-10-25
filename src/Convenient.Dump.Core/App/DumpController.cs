@@ -17,14 +17,16 @@ namespace Convenient.Dump.Core.App
 		public DumpController(DumpOptions options)
 		{
 			_options = options;
+			Route("GET", "^/?$", Index);
 			Route("GET", "^/Content/angular-js$", GetAngular);
 			Route("GET", "^/Content/site-css$", GetSiteCss);
-			Route("GET", "^/?$", Index);
-			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
-			Route("GET", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", GetItem);
-			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
-			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
-			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
+			Route("POST", "^/clear/collections/(?<collection>[a-zA-Z_]+){1}/?$", ClearCollection);
+			Route("POST", "^/clear/collections/?$", ClearAllCollections);
+			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
+			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", GetItem);
+			Route("POST", "^/collections/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
+			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
+			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}
 
 		private async Task<object> GetSiteCss(SimpleContext context, Match match)
@@ -69,6 +71,25 @@ namespace Convenient.Dump.Core.App
 			return new ResponseMessage
 			{
 				Message = result ? $"Deleted {collection}/{id}" : $"Did not delete {collection}/{id}"
+			};
+		}
+
+		private async Task<object> ClearCollection(SimpleContext context, Match match)
+		{
+			var collection = match.Groups["collection"].Value;
+			await _options.DataStore.ClearCollection(collection).ConfigureAwait(false);
+			return new ResponseMessage
+			{
+				Message = $"Cleared {collection}"
+			};
+		}
+
+		private async Task<object> ClearAllCollections(SimpleContext context, Match match)
+		{
+			await _options.DataStore.ClearAllCollections().ConfigureAwait(false);
+			return new ResponseMessage
+			{
+				Message = "Cleared all collections"
 			};
 		}
 

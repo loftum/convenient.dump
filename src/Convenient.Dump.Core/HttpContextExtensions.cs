@@ -17,7 +17,7 @@ namespace Convenient.Dump.Core
 				default:
 					var acceptHeader = context.Request.Headers["Accept"];
 					return acceptHeader.SelectMany(h => ResponseTypes.All.Where(h.Contains))
-						       .FirstOrDefault() ?? ResponseTypes.Html;
+						       .FirstOrDefault() ?? ResponseTypes.Json;
 			}
 		}
 	}
