@@ -39,6 +39,10 @@ namespace Convenient.Dump.Core.App.Queries
 				var current = _enumerator.Current;
 				switch (current.Type)
 				{
+					case TokenType.Number:
+						Advance(false);
+						stack.Push(new ConstantNode(current.Value));
+						break;
 					case TokenType.String:
 						switch (current.Value)
 						{
@@ -70,7 +74,7 @@ namespace Convenient.Dump.Core.App.Queries
 								break;
 							case "(":
 								Advance();
-								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.Value != ")")));
+								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.RawValue != ")")));
 								Advance(false);
 								break;
 							default:
@@ -91,10 +95,6 @@ namespace Convenient.Dump.Core.App.Queries
 		{
 			Advance();
 			AdvanceWhile(c => c.Current.Type == TokenType.Whitespace);
-			if (_enumerator.Current.Type != TokenType.String)
-			{
-				throw new QueryParserException(_enumerator.Current.Position, $"Expected string but got {_enumerator.Current}");
-			}
 			return new ConstantNode(_enumerator.Current.Value);
 		}
 

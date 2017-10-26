@@ -95,15 +95,23 @@ namespace Convenient.Dump.Core.App.Queries.Lang
 			var allOthers = new[] {other}.Concat(others).ToList();
 			var value = new StringBuilder();
 			var position = _enumerator.Position;
+			var allNumbers = true;
 			while (_enumerator.Current.IsLetterOrDigit() || allOthers.Contains(_enumerator.Current))
 			{
-				value.Append((char) _enumerator.Current);
+				value.Append(_enumerator.Current);
+				if (!_enumerator.Current.IsNumber())
+				{
+					allNumbers = false;
+				}
 				if (!_enumerator.MoveNext())
 				{
 					break;
 				}
 			}
-			return new QueryToken(TokenType.String, position, value.ToString());
+			var raw = value.ToString();
+			return allNumbers
+				? new QueryToken(TokenType.Number, position, raw, int.Parse(raw))
+				: new QueryToken(TokenType.String, position, value.ToString());
 		}
 
 		public void Reset()

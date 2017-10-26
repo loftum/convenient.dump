@@ -5,6 +5,7 @@
 		String,
 		Punctuation,
 		Symbol,
-		Whitespace
+		Whitespace,
+		Number
 	}
 }

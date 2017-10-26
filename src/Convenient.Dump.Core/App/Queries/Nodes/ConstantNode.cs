@@ -2,16 +2,16 @@
 {
 	public class ConstantNode : QueryNode
 	{
-		public string Value { get; }
+		public object Value { get; }
 
-		public ConstantNode(string value)
+		public ConstantNode(object value)
 		{
 			Value = value;
 		}
 
 		public override string ToString()
 		{
-			return Value;
+			return Value?.ToString();
 		}
 	}
 }

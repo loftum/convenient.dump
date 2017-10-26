@@ -8,7 +8,7 @@ namespace ConvenientDump.LiteDb
 	{
 		protected override Query VisitConstant(ConstantNode constant)
 		{
-			return Query.All(constant.Value);
+			return Query.All(constant.Value?.ToString());
 		}
 
 		protected override Query VisitUnary(UnaryNode unary)
