@@ -22,7 +22,14 @@ namespace ConvenientDump.LiteDb
 			{
 				case BinaryOperand.And: return Query.And(Visit(binary.Left), Visit(binary.Right));
 				case BinaryOperand.Or: return Query.Or(Visit(binary.Left), Visit(binary.Right));
-				case BinaryOperand.Eq: return Query.EQ(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
+				case BinaryOperand.Eq:
+					var left = Visit(binary.Left).Field.Decode()?.ToString();
+					var right = Visit(binary.Right).Field.Decode();
+					if (right is string s && s.EndsWith("*"))
+					{
+						return Query.StartsWith(left, s.TrimEnd('*'));
+					}
+					return Query.EQ(left, new BsonValue(right));
 				case BinaryOperand.Lt: return Query.LT(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
 				case BinaryOperand.Lte: return Query.LTE(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
 				case BinaryOperand.Gt: return Query.GT(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));

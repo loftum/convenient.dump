@@ -10,11 +10,15 @@ namespace Convenient.Dump.Core.App.Queries
 	{
 		private static readonly Dictionary<string, BinaryOperand> OperandMap = new Dictionary<string, BinaryOperand>
 		{
+			["="] = BinaryOperand.Eq,
+			["=="] = BinaryOperand.Eq,
 			[":"] = BinaryOperand.Eq,
 			["<"] = BinaryOperand.Lt,
 			["<="] = BinaryOperand.Lte,
+			["<:"] = BinaryOperand.Lte,
 			[">"] = BinaryOperand.Gt,
-			[">="] = BinaryOperand.Gte
+			[">="] = BinaryOperand.Gte,
+			[">:"] = BinaryOperand.Gte
 		};
 
 		private readonly ISuperEnumerator<QueryToken> _enumerator;
@@ -31,11 +35,9 @@ namespace Convenient.Dump.Core.App.Queries
 		private QueryNode Parse()
 		{
 			AdvanceWhile(c => c.Current.Type == TokenType.Whitespace, false);
-			if (!_enumerator.Moved)
-			{
-				return new ConstantNode("*");
-			}
-			return ParseWhile(() => _enumerator.Moved);
+			return _enumerator.Moved ?
+				ParseWhile(() => _enumerator.Moved)
+				: new ConstantNode("*");
 		}
 
 		private QueryNode ParseWhile(Func<bool> condition)
@@ -45,6 +47,20 @@ namespace Convenient.Dump.Core.App.Queries
 			while (_enumerator.Moved && condition())
 			{
 				var current = _enumerator.Current;
+				switch (current.StringValue)
+				{
+					case "AND":
+					case "&&":
+						Advance();
+						stack.Push(new BinaryNode(BinaryOperand.And, stack.Pop(), ParseWhile(condition)));
+						continue;
+					case "OR":
+					case "||":
+						Advance();
+						stack.Push(new BinaryNode(BinaryOperand.Or, stack.Pop(), ParseWhile(condition)));
+						continue;
+				}
+				
 				switch (current.Type)
 				{
 					case TokenType.Number:
@@ -54,14 +70,6 @@ namespace Convenient.Dump.Core.App.Queries
 					case TokenType.String:
 						switch (current.Value)
 						{
-							case "AND":
-								Advance();
-								stack.Push(new BinaryNode(BinaryOperand.And, stack.Pop(), ParseWhile(condition)));
-								break;
-							case "OR":
-								Advance();
-								stack.Push(new BinaryNode(BinaryOperand.Or, stack.Pop(), ParseWhile(condition)));
-								break;
 							default:
 								Advance(false);
 								stack.Push(new ConstantNode(current.Value));
@@ -83,7 +91,8 @@ namespace Convenient.Dump.Core.App.Queries
 									throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
 								}
 								var left = stack.Pop();
-								stack.Push(new BinaryNode(operand, left, ReadNextThing()));
+								var right = ReadNextThing();
+								stack.Push(new BinaryNode(operand, left, right));
 								Advance(false);
 								break;
 							default:

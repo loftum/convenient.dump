@@ -46,7 +46,7 @@ namespace Convenient.Dump.Core.App.Queries.Lang
 						Current = ReadWhitespace();
 						return true;
 					case var c when c.IsPunctuation():
-						Current = Read(d => d.IsPunctuation(), TokenType.Punctuation);
+						Current = Read(d => d.IsPunctuation() && d!='"' && d != '\\', TokenType.Punctuation);
 						return true;
 					case var c when c.IsSymbol():
 						Current = Read(d => d.IsSymbol(), TokenType.Symbol);
