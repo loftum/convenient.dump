@@ -1,99 +1,88 @@
-﻿<html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>DbInfo</title>
-    <link rel="stylesheet" href="@BasePath/Content/site-css" />
-    <script type="text/javascript" src="@BasePath/Content/angular-js"></script>
-    <script type="text/javascript">(function() { angular.module("app", []) })();</script>
-  </head>
-  <body>
-    <div ng-app="app" ng-controller="DbCtrl as vm">
-      <h1>Collections</h1>
-      <div>
-        <button type="button" class="btn float-left" ng-click="vm.refresh()">Refresh</button>
-        <button type="button" class="btn btn-orange float-right" ng-click="vm.clearAll()">Clear all</button>
-      </div>
-      <div class="clear-both"></div>
-      <table class="g100">
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="collection in vm.model.collections">
-            <td>{{collection.name}} ({{collection.count}})</td>
-            <td>
-              <button type="button" class="btn btn-orange" ng-click="vm.clear(collection)">Clear</button>
-              <button type="button" class="btn btn-red" ng-click="vm.drop(collection)">Drop</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <pre ng-show="!!vm.error">{{vm.error | json}}</pre>
-    </div>
+﻿<div ng-app="app" ng-controller="DbCtrl as vm">
+  <h1>Collections</h1>
+  <div>
+    <button type="button" class="btn float-left" ng-click="vm.refresh()">Refresh</button>
+    <button type="button" class="btn btn-orange float-right" ng-click="vm.clearAll()">Clear all</button>
+  </div>
+  <div class="clear-both"></div>
+  <table class="g100">
+    <thead>
+      <tr>
+        <th style="text-align: left;">name</th>
+        <th style="text-align: left;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="collection in vm.model.collections">
+        <td><a href="@BasePath/collections/{{collection.name}}">{{collection.name}} ({{collection.count}})</a></td>
+        <td>
+          <button type="button" class="btn btn-orange" ng-click="vm.clear(collection)">Clear</button>
+          <button type="button" class="btn btn-red" ng-click="vm.drop(collection)">Drop</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <pre ng-show="!!vm.error">{{vm.error | json}}</pre>
+</div>
 
-    <script type="text/javascript">
-      (function() {
-        angular.module("app").controller("DbCtrl", DbCtrl);
+<script type="text/javascript">
+  (function() {
+    angular.module("app").controller("DbCtrl", DbCtrl);
 
-        function DbCtrl($http) {
-          var vm = this;
+    function DbCtrl($http) {
+      var vm = this;
 
-          vm.drop = function (collection) {
-            http({
-              method: "DELETE",
-              url: "@BasePath" + "/collections/" + collection.name
-            }).then(vm.refresh);
-          }
+      vm.drop = function (collection) {
+        http({
+          method: "DELETE",
+          url: "@BasePath" + "/collections/" + collection.name
+        }).then(vm.refresh);
+      }
 
-          vm.clear = function (collection) {
-            http({
-              method: "POST",
-              url: "@BasePath" + "/clear/collections/" + collection.name
-            }).then(vm.refresh);
-          }
+      vm.clear = function (collection) {
+        http({
+          method: "POST",
+          url: "@BasePath" + "/clear/collections/" + collection.name
+        }).then(vm.refresh);
+      }
 
-          vm.clearAll = function () {
-            http({
-              method: "POST",
-              url: "@BasePath" + "/clear/collections"
-            }).then(vm.refresh);
-          }
+      vm.clearAll = function () {
+        http({
+          method: "POST",
+          url: "@BasePath" + "/clear/collections"
+        }).then(vm.refresh);
+      }
 
-          vm.refresh = function() {
-            http({
-              method: "GET",
-              url: document.location.href
-            }).then(function(r) {
-              setModel(r.data);
-            });
-          }
+      vm.refresh = function() {
+        http({
+          method: "GET",
+          url: document.location.href
+        }).then(function(r) {
+          setModel(r.data);
+        });
+      }
 
-          function http(input) {
-            vm.error = null;
-            return $http(input).catch(showError);
-          }
+      function http(input) {
+        vm.error = null;
+        return $http(input).catch(showError);
+      }
 
-          function showError(e) {
-            vm.error = e.data;
-          }
+      function showError(e) {
+        vm.error = e.data;
+      }
 
-          function setModel(model) {
-            model.collections = model.collection || model.Collections || [];
-            for (var ii = 0; ii < model.collections.length; ii++) {
-              var collection = model.collections[ii];
-              collection.name = collection.name || collection.Name;
-              collection.count = collection.count || collection.Count;
-            }
-            vm.model = model;
-          }
-
-          setModel(JSON.parse(document.getElementById("model").innerHTML));
+      function setModel(model) {
+        model.collections = model.collection || model.Collections || [];
+        for (var ii = 0; ii < model.collections.length; ii++) {
+          var collection = model.collections[ii];
+          collection.name = collection.name || collection.Name;
+          collection.count = collection.count || collection.Count;
         }
-      })();
-    </script>
-    <script id="model" type="text/json">@Model</script>
-  </body>
-</html>
+        vm.model = model;
+      }
+
+      setModel(JSON.parse(document.getElementById("model").innerHTML));
+    }
+  })();
+</script>
+<script id="model" type="text/json">@Model</script>

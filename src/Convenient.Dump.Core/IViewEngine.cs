@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Convenient.Dump.Core.App;
 
 namespace Convenient.Dump.Core
 {
 	public interface IViewEngine
 	{
-		Task<string> Render(HttpContext context, object result);
+		Task<string> Render(SimpleContext context, object result);
 	}
 }

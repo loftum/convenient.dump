@@ -34,19 +34,18 @@ namespace Convenient.Dump.Core
 
 		public async Task Invoke(HttpContext context)
 		{
+			var simple = new SimpleContext(new SimpleRequest
+			{
+				Method = context.Request.Method,
+				PathBase = context.Request.PathBase,
+				Path = context.Request.Path,
+				Headers = new SimpleHeaderDictionary(context.Request.Headers.Select(h => new KeyValuePair<string, string>(h.Key, h.Value))),
+				Query = context.Request.Query.ToDictionary(q => q.Key, q => q.Value.ToArray()),
+				Body = context.Request.Body
+			});
 			try
 			{
-				var simple = new SimpleContext
-				{
-					Request = new SimpleRequest
-					{
-						Method = context.Request.Method,
-						Path = context.Request.Path,
-						Headers = new SimpleHeaderDictionary(context.Request.Headers.Select(h => new KeyValuePair<string, string>(h.Key, h.Value))),
-						Query = context.Request.Query.ToDictionary(q => q.Key, q => q.Value.ToArray()),
-						Body = context.Request.Body
-					}
-				};
+				
 				var action = _controller.GetAction(simple);
 				if (action == null)
 				{
@@ -65,7 +64,7 @@ namespace Convenient.Dump.Core
 				{
 					case ResponseTypes.Html:
 						context.Response.ContentType = "text/html";
-						var html = await _options.ViewEngine.Render(context, model);
+						var html = await _options.ViewEngine.Render(simple, model);
 						await context.Response.WriteAsync(html).ConfigureAwait(false);
 						break;
 					default:
@@ -93,7 +92,7 @@ namespace Convenient.Dump.Core
 					{
 						case ResponseTypes.Html:
 							context.Response.ContentType = "text/html";
-							var html = await _options.ViewEngine.Render(context, result);
+							var html = await _options.ViewEngine.Render(simple, result);
 							await context.Response.WriteAsync(html).ConfigureAwait(false);
 							break;
 						default:

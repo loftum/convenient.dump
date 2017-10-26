@@ -17,40 +17,44 @@ namespace Convenient.Dump.Core.App
 		public DumpController(DumpOptions options)
 		{
 			_options = options;
-			Route("GET", "^/?$", Index);
-			Route("GET", "^/Content/angular-js$", GetAngular);
-			Route("GET", "^/Content/site-css$", GetSiteCss);
+			Route("GET", "^/?$", DbInfo);
+			Route("GET", "^/Content/(?<filename>[a-zA-Z_-]+){1}/?$", GetStaticFile);
 			Route("POST", "^/clear/collections/(?<collection>[a-zA-Z_]+){1}/?$", ClearCollection);
 			Route("POST", "^/clear/collections/?$", ClearAllCollections);
 			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
 			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", GetItem);
-			Route("POST", "^/collections/(?<collection>[a-zA-Z_]+){1}$", SaveItem);
+			Route("POST", "^/collections/(?<collection>[a-zA-Z_]+){1}/?$", SaveItem);
 			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
 			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}
 
-		private async Task<object> GetSiteCss(SimpleContext context, Match match)
+		private async Task<object> GetStaticFile(SimpleContext context, Match match)
 		{
-			var file = await _fileLoader.GetAsync("Content/site.css").ConfigureAwait(false);
+			var filename = match.Groups["filename"].Value.Replace("-", ".");
+			var file = await _fileLoader.GetAsync($"Content/{filename}").ConfigureAwait(false);
+
 			return new SimpleResponse
 			{
-				ContentType = "text/css",
+				ContentType = GetContentType(filename),
 				WriteAsync = r => r.WriteAsync(file)
 			};
 		}
 
-		private async Task<object> GetAngular(SimpleContext context, Match match)
+		private static string GetContentType(string filename)
 		{
-			var file = await _fileLoader.GetAsync("Content/angular.min.js").ConfigureAwait(false);
-			return new SimpleResponse
+			var extension = Path.GetExtension(filename).Trim('.');
+			switch (extension)
 			{
-				ContentType = "text/javascript",
-				WriteAsync = r => r.WriteAsync(file)
-			};
+				case "js": return "text/javascript";
+				case "css": return "text/css";
+				case "html": return "text/html";
+				default: return "text/plain";
+			}
 		}
 
-		private async Task<object> Index(SimpleContext context, Match match)
+		private async Task<object> DbInfo(SimpleContext context, Match match)
 		{
+			context.ViewBag["Title"] = "Index";
 			var db = await _options.DataStore.GetInfo().ConfigureAwait(false);
 			return db;
 		}
@@ -58,7 +62,9 @@ namespace Convenient.Dump.Core.App
 		private async Task<object> GetItem(SimpleContext context, Match match)
 		{
 			var collection = match.Groups["collection"].Value;
+			
 			var id = match.Groups["id"].Value;
+			context.ViewBag["Title"] = id;
 			var result = await _options.DataStore.Get(collection, id).ConfigureAwait(false);
 			return result;
 		}
@@ -125,7 +131,9 @@ namespace Convenient.Dump.Core.App
 		private async Task<object> QueryCollection(SimpleContext context, Match match)
 		{
 			var parameters = context.GetQueryParameters();
-			var result = await _options.DataStore.QueryCollection(match.Groups["collection"].Value, parameters).ConfigureAwait(false);
+			var collection = match.Groups["collection"].Value;
+			context.ViewBag["Title"] = collection;
+			var result = await _options.DataStore.QueryCollection(collection, parameters).ConfigureAwait(false);
 			return result;
 		}
 

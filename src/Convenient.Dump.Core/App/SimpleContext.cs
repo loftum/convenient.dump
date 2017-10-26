@@ -6,12 +6,20 @@ namespace Convenient.Dump.Core.App
 {
 	public class SimpleContext
 	{
-		public SimpleRequest Request { get; set; } = new SimpleRequest();
+		public SimpleRequest Request { get; }
+		public Dictionary<string, object> ViewBag { get; } = new Dictionary<string, object>();
+
+		public SimpleContext(SimpleRequest request)
+		{
+			Request = request;
+			ViewBag["Title"] = "";
+		}
 	}
 
 	public class SimpleRequest
 	{
 		public string Method { get; set; }
+		public string PathBase { get; set; }
 		public string Path { get; set; }
 		public SimpleHeaderDictionary Headers { get; set; }
 		public Dictionary<string, string[]> Query { get; set; }
