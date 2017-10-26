@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Convenient.Dump.Core;
@@ -28,6 +29,14 @@ namespace ConvenientDump.LiteDb
 			{
 				return Task.CompletedTask;
 			}
+			if (document["_id"] == BsonValue.Null)
+			{
+				document["_id"] = Guid.NewGuid().ToString();
+			}
+			if (document["_dumptime"] == BsonValue.Null)
+			{
+				document["_dumptime"] = DateTime.UtcNow;
+			}
 			var coll = _db.GetCollection(collection);
 			coll.Upsert(document);
 			return Task.CompletedTask;
@@ -36,7 +45,7 @@ namespace ConvenientDump.LiteDb
 		public Task<object> Get(string collection, string id)
 		{
 			var coll = _db.GetCollection(collection);
-			var result = coll.FindById(new ObjectId(id));
+			var result = coll.FindById(id);
 			return Task.FromResult(ToObject(result));
 		}
 

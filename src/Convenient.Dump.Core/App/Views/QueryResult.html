@@ -4,8 +4,10 @@
     <input type="text" placeholder="search" ng-model="vm.search.q" class="g100" ng-enter="vm.search()"/>
   </div>
   <div class="margin-s">
-    <button type="button" class="btn" ng-click="vm.search()">Search</button>
+    <button type="button" class="btn float-left" ng-click="vm.search()">Search</button>
+    <button type="button" class="btn btn-orange float-right" ng-click="vm.clear()">Clear</button>
   </div>
+  <div class="clear-both"></div>
   <div class="margin-s">
     <table>
       <thead>
@@ -16,7 +18,7 @@
       </thead>
       <tbody>
         <tr ng-repeat="item in vm.result.items">
-          <td><a href="@BasePath@Path/{{item.getId()}}">{{item.getId()}}</a></td>
+          <td><a href="@BasePath@Path/items/{{item.getId()}}">{{item.getId()}}</a></td>
           <td><pre>{{item | json}}</pre></td>
         </tr>
       </tbody>
@@ -36,17 +38,30 @@
         q:""
       };
 
-      vm.search = function () {
+      function http(options) {
         vm.error = null;
-        $http({
+        return $http(options).catch(showError);
+      }
+
+      function showError(e) {
+        vm.error = e.data;
+      }
+
+      vm.search = function () {
+        http({
           method: "GET",
           url: document.location.href,
           params: vm.search
         }).then(function (r) {
           setResult(r.data);
-        }).catch(function (e) {
-          vm.error = e.data;
         });
+      }
+
+      vm.clear = function() {
+        http({
+          method: "DELETE",
+          url: document.location.href + "/items"
+        }).then(vm.search);
       }
 
       function getId() {

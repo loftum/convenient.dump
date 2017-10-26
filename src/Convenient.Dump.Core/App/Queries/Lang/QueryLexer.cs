@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Text;
 
@@ -45,10 +46,10 @@ namespace Convenient.Dump.Core.App.Queries.Lang
 						Current = ReadWhitespace();
 						return true;
 					case var c when c.IsPunctuation():
-						Current = ReadCharAs(TokenType.Punctuation);
+						Current = Read(d => d.IsPunctuation(), TokenType.Punctuation);
 						return true;
 					case var c when c.IsSymbol():
-						Current = ReadCharAs(TokenType.Symbol);
+						Current = Read(d => d.IsSymbol(), TokenType.Symbol);
 						return true;
 				}
 				return true;
@@ -66,6 +67,21 @@ namespace Convenient.Dump.Core.App.Queries.Lang
 			}
 			_enumerator.MoveNext();
 			return new QueryToken(TokenType.String, position, value.ToString());
+		}
+
+		private QueryToken Read(Func<char, bool> condition, TokenType type)
+		{
+			var value = new StringBuilder();
+			var position = _enumerator.Position;
+			while (condition(_enumerator.Current))
+			{
+				value.Append(_enumerator.Current);
+				if (!_enumerator.MoveNext())
+				{
+					break;
+				}
+			}
+			return new QueryToken(type, position, value.ToString());
 		}
 
 		private QueryToken ReadCharAs(TokenType type)

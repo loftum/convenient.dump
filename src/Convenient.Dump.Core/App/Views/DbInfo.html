@@ -41,15 +41,15 @@
 
       vm.clear = function (collection) {
         http({
-          method: "POST",
-          url: "@BasePath" + "/clear/collections/" + collection.name
+          method: "DELETE",
+          url: "@BasePath" + "/collections/" + collection.name + "/items"
         }).then(vm.refresh);
       }
 
       vm.clearAll = function () {
         http({
-          method: "POST",
-          url: "@BasePath" + "/clear/collections"
+          method: "DELETE",
+          url: "@BasePath" + "/collections"
         }).then(vm.refresh);
       }
 

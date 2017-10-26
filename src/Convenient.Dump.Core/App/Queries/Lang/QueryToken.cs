@@ -4,18 +4,18 @@
 	{
 		public TokenType Type { get; }
 		public SourcePosition Position { get; }
-		public string RawValue { get; }
+		public string StringValue { get; }
 		public object Value { get; }
 
-		public QueryToken(TokenType type, SourcePosition position, string rawValue) : this(type, position, rawValue, rawValue)
+		public QueryToken(TokenType type, SourcePosition position, string stringValue) : this(type, position, stringValue, stringValue)
 		{
 		}
 
-		public QueryToken(TokenType type, SourcePosition position, string rawValue, object value)
+		public QueryToken(TokenType type, SourcePosition position, string stringValue, object value)
 		{
 			Type = type;
 			Position = position;
-			RawValue = rawValue;
+			StringValue = stringValue;
 			Value = value;
 		}
 

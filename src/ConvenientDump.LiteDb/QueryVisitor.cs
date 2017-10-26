@@ -8,7 +8,7 @@ namespace ConvenientDump.LiteDb
 	{
 		protected override Query VisitConstant(ConstantNode constant)
 		{
-			return Query.All(constant.Value?.ToString());
+			return Query.All(constant.Value.Encode());
 		}
 
 		protected override Query VisitUnary(UnaryNode unary)
@@ -22,10 +22,13 @@ namespace ConvenientDump.LiteDb
 			{
 				case BinaryOperand.And: return Query.And(Visit(binary.Left), Visit(binary.Right));
 				case BinaryOperand.Or: return Query.Or(Visit(binary.Left), Visit(binary.Right));
-				case BinaryOperand.Equals:
-					return Query.EQ(Visit(binary.Left).Field, new BsonValue(Visit(binary.Right).Field));
+				case BinaryOperand.Eq: return Query.EQ(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
+				case BinaryOperand.Lt: return Query.LT(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
+				case BinaryOperand.Lte: return Query.LTE(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
+				case BinaryOperand.Gt: return Query.GT(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
+				case BinaryOperand.Gte: return Query.GTE(Visit(binary.Left).Field.Decode()?.ToString(), new BsonValue(Visit(binary.Right).Field.Decode()));
 			}
-			throw new InvalidOperationException($"Unknown node {binary.GetType()}");
+			throw new InvalidOperationException($"Unknown node {binary}");
 		}
 	}
 }

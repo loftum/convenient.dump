@@ -4,6 +4,10 @@
 	{
 		And,
 		Or,
-		Equals
+		Eq,
+		Lt,
+		Lte,
+		Gt,
+		Gte
 	}
 }

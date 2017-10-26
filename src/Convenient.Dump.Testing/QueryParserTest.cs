@@ -40,14 +40,14 @@ namespace Convenient.Dump.Testing
 		public void ParseEqualsWithQuotes()
 		{
 			var node = Parse<BinaryNode>("\"_field\":value");
-			Assert.Equal(BinaryOperand.Equals, node.Op);
+			Assert.Equal(BinaryOperand.Eq, node.Op);
 		}
 
 		[Fact]
 		public void ParseEquals()
 		{
 			var node = Parse<BinaryNode>("field:value");
-			Assert.Equal(BinaryOperand.Equals, node.Op);
+			Assert.Equal(BinaryOperand.Eq, node.Op);
 		}
 
 		[Fact]
@@ -75,6 +75,14 @@ namespace Convenient.Dump.Testing
 		public void UnaryError()
 		{
 			Assert.Throws<QueryParserException>(() => QueryParser.Parse("("));
+		}
+
+		[Fact]
+		public void ParseNumber()
+		{
+			var node = Parse<BinaryNode>("field:42");
+			var right = (ConstantNode) node.Right;
+			Assert.IsType<int>(right.Value);
 		}
 
 		private QueryNode Parse(string query)

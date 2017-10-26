@@ -8,6 +8,15 @@ namespace Convenient.Dump.Core.App.Queries
 {
 	public class QueryParser
 	{
+		private static readonly Dictionary<string, BinaryOperand> OperandMap = new Dictionary<string, BinaryOperand>
+		{
+			[":"] = BinaryOperand.Eq,
+			["<"] = BinaryOperand.Lt,
+			["<="] = BinaryOperand.Lte,
+			[">"] = BinaryOperand.Gt,
+			[">="] = BinaryOperand.Gte
+		};
+
 		private readonly ISuperEnumerator<QueryToken> _enumerator;
 
 		public QueryNode Result { get; }
@@ -28,7 +37,6 @@ namespace Convenient.Dump.Core.App.Queries
 			}
 			return ParseWhile(() => _enumerator.Moved);
 		}
-
 
 		private QueryNode ParseWhile(Func<bool> condition)
 		{
@@ -60,21 +68,22 @@ namespace Convenient.Dump.Core.App.Queries
 								break;
 						}
 						break;
+					case TokenType.Symbol:
 					case TokenType.Punctuation:
 						switch (current.Value)
 						{
-							case ":":
+							case "(":
+								Advance();
+								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.StringValue != ")")));
+								Advance(false);
+								break;
+							case string v when OperandMap.TryGetValue(v, out var operand):
 								if (!stack.Any())
 								{
 									throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
 								}
 								var left = stack.Pop();
-								stack.Push(new BinaryNode(BinaryOperand.Equals, left, ReadNextThing()));
-								Advance(false);
-								break;
-							case "(":
-								Advance();
-								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.RawValue != ")")));
+								stack.Push(new BinaryNode(operand, left, ReadNextThing()));
 								Advance(false);
 								break;
 							default:
