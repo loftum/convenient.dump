@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr ng-repeat="item in vm.result.items">
-          <td><a href="@BasePath@Path/{{item.id}}">{{item.id}}</a></td>
+          <td><a href="@BasePath@Path/{{item.getId()}}">{{item.getId()}}</a></td>
           <td><pre>{{item | json}}</pre></td>
         </tr>
       </tbody>
@@ -49,11 +49,15 @@
         });
       }
 
+      function getId() {
+        return this._id || this.id || this.Id || this.ID;
+      }
+
       function setResult(result) {
         result.items = result.Items || result.items || [];
         for (var ii = 0; ii < result.items.length; ii++) {
           var item = result.items[ii];
-          item.id = item._id || item.id || item.Id || item.ID;
+          item.getId = getId;
         }
         vm.result = result;
       }
