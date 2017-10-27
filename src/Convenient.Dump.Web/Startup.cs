@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 using Convenient.Dump.Core;
 using ConvenientDump.LiteDb;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Convenient.Dump.Web
 {
-    public class Startup
+	public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -26,11 +25,11 @@ namespace Convenient.Dump.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+	        app.UseFavicon();
 
 	        app.Map("/db", a => a.UseDump(new DumpOptions
 	        {
 				DataStore = new LiteDbDataStore(),
-				
 				ToJson = JsonConvert.SerializeObject
 	        }));
 
