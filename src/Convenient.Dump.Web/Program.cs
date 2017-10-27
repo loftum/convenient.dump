@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Convenient.Dump.Web
 {
-    public class Program
+	public class Program
     {
         public static void Main(string[] args)
         {

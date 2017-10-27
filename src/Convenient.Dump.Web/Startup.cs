@@ -1,9 +1,9 @@
-﻿using System.Security.Cryptography;
+﻿using System.Threading.Tasks;
 using Convenient.Dump.Core;
 using ConvenientDump.LiteDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -25,7 +25,11 @@ namespace Convenient.Dump.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-	        app.UseFavicon();
+			if (Config.Current.RequireHttps)
+			{
+				app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+			}
+			app.UseFavicon();
 
 	        app.Map("/db", a => a.UseDump(new DumpOptions
 	        {
@@ -33,9 +37,10 @@ namespace Convenient.Dump.Web
 				ToJson = JsonConvert.SerializeObject
 	        }));
 
-            app.Run(async (context) =>
+            app.Run(context =>
             {
-                await context.Response.WriteAsync("Dump");
+				context.Response.Redirect("/db");
+				return Task.CompletedTask;
             });
         }
     }
