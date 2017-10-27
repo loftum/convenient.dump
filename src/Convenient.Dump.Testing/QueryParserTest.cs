@@ -51,6 +51,13 @@ namespace Convenient.Dump.Testing
 		}
 
 		[Fact]
+		public void ParseNestedField()
+		{
+			var node = Parse<BinaryNode>("field.nestedField==value");
+			Assert.Equal(BinaryOperand.Eq, node.Op);
+		}
+
+		[Fact]
 		public void ParseAnd()
 		{
 			var node = Parse<BinaryNode>("field:value AND field2:value2");

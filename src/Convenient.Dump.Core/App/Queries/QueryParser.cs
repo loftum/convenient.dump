@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Convenient.Dump.Core.App.Queries.Lang;
 using Convenient.Dump.Core.App.Queries.Nodes;
 
@@ -71,8 +72,7 @@ namespace Convenient.Dump.Core.App.Queries
 						switch (current.Value)
 						{
 							default:
-								Advance(false);
-								stack.Push(new ConstantNode(current.Value));
+								stack.Push(ReadField());
 								break;
 						}
 						break;
@@ -81,9 +81,7 @@ namespace Convenient.Dump.Core.App.Queries
 						switch (current.Value)
 						{
 							case "(":
-								Advance();
-								stack.Push(new UnaryNode(ParseWhile(() => _enumerator.Current.StringValue != ")")));
-								Advance(false);
+								stack.Push(ParseUnary());
 								break;
 							case string v when OperandMap.TryGetValue(v, out var operand):
 								if (!stack.Any())
@@ -107,6 +105,28 @@ namespace Convenient.Dump.Core.App.Queries
 				}
 			}
 			return stack.Pop();
+		}
+
+		private QueryNode ParseUnary()
+		{
+			Advance();
+			var operand = ParseWhile(() => _enumerator.Current.StringValue != ")");
+			Advance(false);
+			return new UnaryNode(operand);
+		}
+
+		private QueryNode ReadField()
+		{
+			var value = new StringBuilder();
+			while (_enumerator.Moved && (_enumerator.Current.Type == TokenType.String || _enumerator.Current.StringValue == "."))
+			{
+				value.Append(_enumerator.Current.Value);
+				if (!_enumerator.MoveNext())
+				{
+					break;
+				}
+			}
+			return new ConstantNode(value.ToString());
 		}
 
 		private QueryNode ReadNextThing()
