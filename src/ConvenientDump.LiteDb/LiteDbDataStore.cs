@@ -110,6 +110,7 @@ namespace ConvenientDump.LiteDb
 		{
 			switch (value)
 			{
+				case null: return null;
 				case BsonDocument doc: return ToDictionary(doc);
 				case BsonArray array: return array.Select(ToObject);
 				case var v when v.IsObjectId: return v.AsObjectId.ToString();

@@ -14,7 +14,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="collection in vm.model.collections">
-        <td><a href="@BasePath/collections/{{collection.name}}">{{collection.name}} ({{collection.count}})</a></td>
+        <td><a href="@BasePath/{{collection.name}}">{{collection.name}} ({{collection.count}})</a></td>
         <td>
           <button type="button" class="btn btn-orange" ng-click="vm.clear(collection)">Clear</button>
           <button type="button" class="btn btn-red" ng-click="vm.drop(collection)">Drop</button>
