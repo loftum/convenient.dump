@@ -61,7 +61,7 @@
       vm.clear = function() {
         http({
           method: "DELETE",
-          url: document.location.href
+          url: document.location.href + "/*"
         }).then(vm.search);
       }
 

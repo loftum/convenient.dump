@@ -52,7 +52,7 @@ namespace ConvenientDump.LiteDb
 		public Task<bool> RemoveItem(string collection, string id)
 		{
 			var coll = _db.GetCollection(collection);
-			var result = coll.Delete(new ObjectId(id));
+			var result = coll.Delete(id);
 			return Task.FromResult(result);
 		}
 
@@ -71,11 +71,15 @@ namespace ConvenientDump.LiteDb
 		public Task<QueryResult> QueryCollection(string collection, QueryInput input)
 		{
 			var coll = _db.GetCollection(collection);
-			var query = input.Query == null ? Query.All() : new QueryVisitor().Visit(input.Query);
+			var query = input.Query == null ? Query.All("_dumptime", Query.Descending) : new QueryVisitor().Visit(input.Query);
 			
 			var result = new QueryResult
 			{
-				Items = coll.Find(query, input.Skip, input.Take).Select(ToObject).ToArray()
+				Items = coll.Find(query, input.Skip, input.Take)
+					.OrderByDescending(d => d["_dumptime"])
+					.Take(input.Take)
+					.Select(ToObject)
+					.ToArray()
 			};
 			return Task.FromResult(result);
 		}
