@@ -1,7 +1,8 @@
 ﻿<div ng-app="app" ng-controller="Ctrl as vm">
   <h1>@ViewBag.Title</h1>
   <div class="margin-s">
-    <input type="text" placeholder="search" ng-model="vm.search.q" class="g100" ng-enter="vm.search()"/>
+    <!--<input type="text" placeholder="search" ng-model="vm.search.q" class="g100" ng-enter="vm.search()"/>-->
+    <textarea placeholder="query" ng-attr-autofocus ng-model="vm.search.q" class="g100" ng-enter="vm.search()"></textarea>
   </div>
   <div class="margin-s">
     <button type="button" class="btn float-left" ng-click="vm.search()">Search</button>

@@ -13,7 +13,7 @@ a:hover {
     color: #00ffff;
 }
 
-input {
+input,textarea {
     background: #222222;
     color: #dfdfdf;
     font-family: Monospace;
