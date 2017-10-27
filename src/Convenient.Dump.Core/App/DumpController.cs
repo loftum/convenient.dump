@@ -20,16 +20,16 @@ namespace Convenient.Dump.Core.App
 			Route("GET", "^/?$", DbInfo);
 			Route("GET", "^/Content/(?<filename>[a-zA-Z_-]+){1}/?$", GetStaticFile);
 			
-			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
+			Route("GET", "^/(?<collection>[a-zA-Z_]+){1}(\\.[a-zA-Z]+)?/?$", QueryCollection);
 
-			Route("GET", "^/collections/(?<collection>[a-zA-Z_]+)/items/(?<id>[a-zA-Z0-9-_]+){1}/?$", GetItem);
-			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+)/items/(?<id>[a-zA-Z0-9]+){1}/?$", RemoveItem);
+			Route("GET", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9-_]+){1}(\\.[a-zA-Z]+)?/?$", GetItem);
+			Route("DELETE", "^/(?<collection>[a-zA-Z_]+)/(?<id>[a-zA-Z0-9]+){1}(\\.[a-zA-Z]+)?/?$", RemoveItem);
 
-			Route("POST", "^/collections/(?<collection>[a-zA-Z_]+){1}/?$", SaveItem);
+			Route("POST", "^/(?<collection>[a-zA-Z_]+){1}/?$", SaveItem);
 			
-			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+){1}/items/?$", ClearCollection);
-			Route("DELETE", "^/collections/?$", ClearAllCollections);
-			Route("DELETE", "^/collections/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
+			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/\\*?$", ClearCollection);
+			Route("DELETE", "^/\\*/\\*?$", ClearAllCollections);
+			Route("DELETE", "^/(?<collection>[a-zA-Z_]+){1}/?$", DropCollection);
 		}
 
 		private async Task<object> GetStaticFile(SimpleContext context, Match match)

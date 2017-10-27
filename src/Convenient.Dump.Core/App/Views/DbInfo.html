@@ -35,21 +35,21 @@
       vm.drop = function (collection) {
         http({
           method: "DELETE",
-          url: "@BasePath" + "/collections/" + collection.name
+          url: "@BasePath" + "/" + collection.name
         }).then(vm.refresh);
       }
 
       vm.clear = function (collection) {
         http({
           method: "DELETE",
-          url: "@BasePath" + "/collections/" + collection.name + "/items"
+          url: "@BasePath" + "/" + collection.name + "/*"
         }).then(vm.refresh);
       }
 
       vm.clearAll = function () {
         http({
           method: "DELETE",
-          url: "@BasePath" + "/collections"
+          url: "@BasePath" + "/*/*"
         }).then(vm.refresh);
       }
 
