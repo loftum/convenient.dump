@@ -11,6 +11,7 @@ namespace Convenient.Dump.Core.App.Queries.Nodes
 				case ConstantNode c: return VisitConstant(c);
 				case BinaryNode b: return VisitBinary(b);
 				case UnaryNode u: return VisitUnary(u);
+				case NotNode n: return VisitNot(n);
 				default:
 					throw new InvalidOperationException($"Unknown node {node.GetType()}");
 			}
@@ -19,5 +20,6 @@ namespace Convenient.Dump.Core.App.Queries.Nodes
 		protected abstract T VisitConstant(ConstantNode node);
 		protected abstract T VisitBinary(BinaryNode binary);
 		protected abstract T VisitUnary(UnaryNode unary);
+		protected abstract T VisitNot(NotNode not);
 	}
 }

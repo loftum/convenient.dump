@@ -92,6 +92,12 @@ namespace Convenient.Dump.Testing
 			Assert.IsType<int>(right.Value);
 		}
 
+		[Fact]
+		public void ParseNot()
+		{
+			Parse<NotNode>("field!=42");
+		}
+
 		private QueryNode Parse(string query)
 		{
 			var node = QueryParser.Parse(query);

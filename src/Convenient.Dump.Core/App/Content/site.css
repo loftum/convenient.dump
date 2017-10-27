@@ -49,9 +49,27 @@ input,textarea {
     width: 100%;
 }
 
-.bordered {
-    border: 1px solid #999999;
+.border,
+.border-bottom {
+    border-bottom: 1px solid #555555;
 }
+
+.border,
+.border-top {
+    border-top: 1px solid #555555;
+}
+
+.border,
+.border-left {
+    border-left: 1px solid #555555;
+}
+
+.border,
+.border-right {
+    border-right: 1px solid #555555;
+}
+
+
 
 .float-left {
     float: left;
@@ -67,4 +85,12 @@ input,textarea {
 
 .margin-s {
     margin: 10px;
+}
+
+.word-wrap {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
 }

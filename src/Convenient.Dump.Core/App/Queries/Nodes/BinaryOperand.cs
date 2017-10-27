@@ -5,6 +5,7 @@
 		And,
 		Or,
 		Eq,
+		Neq,
 		Lt,
 		Lte,
 		Gt,

@@ -16,6 +16,11 @@ namespace ConvenientDump.LiteDb
 			return Visit(unary.Operand);
 		}
 
+		protected override Query VisitNot(NotNode not)
+		{
+			return Query.Not(Visit(not.Operand));
+		}
+
 		protected override Query VisitBinary(BinaryNode binary)
 		{
 			switch (binary.Op)

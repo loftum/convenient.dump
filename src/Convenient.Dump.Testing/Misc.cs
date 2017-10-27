@@ -17,7 +17,7 @@ namespace Convenient.Dump.Testing
 		[Fact]
 		public void CharProperties()
 		{
-			PrintPropertiesOf('(');
+			PrintPropertiesOf('!');
 		}
 
 		private void PrintPropertiesOf(char c)

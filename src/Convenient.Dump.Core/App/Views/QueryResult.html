@@ -11,16 +11,12 @@
   <div class="clear-both"></div>
   <div class="margin-s">
     <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Value</th>
-        </tr>
-      </thead>
       <tbody>
         <tr ng-repeat="item in vm.result.items">
-          <td><a href="@BasePath@Path/items/{{item.getId()}}">{{item.getId()}}</a></td>
-          <td><pre>{{item | json}}</pre></td>
+          <td class="border-bottom">
+            <a href="@BasePath@Path/items/{{item.getId()}}">{{item.getId()}}</a>
+            <pre class="word-wrap margin-s">{{item | json}}</pre>
+          </td>
         </tr>
       </tbody>
     </table>

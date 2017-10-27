@@ -9,6 +9,8 @@ namespace Convenient.Dump.Core.App.Queries
 {
 	public class QueryParser
 	{
+		private readonly Stack<QueryNode> _stack = new Stack<QueryNode>();
+
 		private static readonly Dictionary<string, BinaryOperand> OperandMap = new Dictionary<string, BinaryOperand>
 		{
 			["="] = BinaryOperand.Eq,
@@ -43,8 +45,6 @@ namespace Convenient.Dump.Core.App.Queries
 
 		private QueryNode ParseWhile(Func<bool> condition)
 		{
-			var stack = new Stack<QueryNode>();
-
 			while (_enumerator.Moved && condition())
 			{
 				var current = _enumerator.Current;
@@ -53,12 +53,12 @@ namespace Convenient.Dump.Core.App.Queries
 					case "AND":
 					case "&&":
 						Advance();
-						stack.Push(new BinaryNode(BinaryOperand.And, stack.Pop(), ParseWhile(condition)));
+						_stack.Push(new BinaryNode(BinaryOperand.And, _stack.Pop(), ParseWhile(condition)));
 						continue;
 					case "OR":
 					case "||":
 						Advance();
-						stack.Push(new BinaryNode(BinaryOperand.Or, stack.Pop(), ParseWhile(condition)));
+						_stack.Push(new BinaryNode(BinaryOperand.Or, _stack.Pop(), ParseWhile(condition)));
 						continue;
 				}
 				
@@ -66,13 +66,13 @@ namespace Convenient.Dump.Core.App.Queries
 				{
 					case TokenType.Number:
 						Advance(false);
-						stack.Push(new ConstantNode(current.Value));
+						_stack.Push(new ConstantNode(current.Value));
 						break;
 					case TokenType.String:
 						switch (current.Value)
 						{
 							default:
-								stack.Push(ReadField());
+								_stack.Push(ReadField());
 								break;
 						}
 						break;
@@ -80,17 +80,21 @@ namespace Convenient.Dump.Core.App.Queries
 					case TokenType.Punctuation:
 						switch (current.Value)
 						{
+							case "!":
+								Advance();
+								_stack.Push(new NotNode(ParseWhile(condition)));
+								break;
 							case "(":
-								stack.Push(ParseUnary());
+								_stack.Push(ParseUnary());
 								break;
 							case string v when OperandMap.TryGetValue(v, out var operand):
-								if (!stack.Any())
+								if (!_stack.Any())
 								{
 									throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
 								}
-								var left = stack.Pop();
+								var left = _stack.Pop();
 								var right = ReadNextThing();
-								stack.Push(new BinaryNode(operand, left, right));
+								_stack.Push(new BinaryNode(operand, left, right));
 								Advance(false);
 								break;
 							default:
@@ -104,7 +108,7 @@ namespace Convenient.Dump.Core.App.Queries
 						throw new QueryParserException(_enumerator.Current.Position, $"Unexpected token {_enumerator.Current}");
 				}
 			}
-			return stack.Pop();
+			return _stack.Pop();
 		}
 
 		private QueryNode ParseUnary()

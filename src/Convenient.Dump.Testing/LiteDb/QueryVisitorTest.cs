@@ -29,6 +29,13 @@ namespace Convenient.Dump.Testing.LiteDb
 			Assert.Equal("(field = \"42\")", query.ToString());
 		}
 
+		[Fact]
+		public void Not()
+		{
+			var query = Parse("field!=42");
+			Assert.Equal("!((field = 42))", query.ToString());
+		}
+
 		private Query Parse(string expression)
 		{
 			var node = QueryParser.Parse(expression);
